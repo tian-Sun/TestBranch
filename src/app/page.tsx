@@ -46,7 +46,7 @@ export default function HomePage() {
             </h1>
           </div>
           <p className="text-gray-600 text-lg">
-            将生活游戏化，每个任务都是通往宝藏山的一步
+            Gamify your life, every task is a step towards the treasure mountain
           </p>
         </div>
 
@@ -69,10 +69,10 @@ export default function HomePage() {
         <div className="bg-white rounded-2xl shadow-xl p-6">
           <div className="flex items-center gap-3 mb-6">
             <Mountain className="w-6 h-6 text-indigo-600" />
-            <h2 className="text-2xl font-bold text-gray-800">我的宝藏山</h2>
+            <h2 className="text-2xl font-bold text-gray-800">My Treasure Mountain</h2>
             {tasks.length > 0 && (
               <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
-                {tasks.length} 个宝藏
+                {tasks.length} treasures
               </span>
             )}
           </div>
