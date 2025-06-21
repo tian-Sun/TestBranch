@@ -12,8 +12,8 @@ export const TreasureGrid: React.FC<TreasureGridProps> = ({ tasks, onTaskClick }
     return (
       <div className="text-center py-12">
         <div className="text-6xl mb-4">🏔️</div>
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">你的宝藏山还是空的</h3>
-        <p className="text-gray-500">完成第一个任务来获得你的第一个宝藏吧！</p>
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">Your treasure mountain is empty</h3>
+        <p className="text-gray-500">Complete your first task to get your first treasure!</p>
       </div>
     );
   }

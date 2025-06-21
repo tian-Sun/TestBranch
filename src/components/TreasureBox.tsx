@@ -37,7 +37,7 @@ export const TreasureBox: React.FC<TreasureBoxProps> = ({ task, onClick }) => {
           {task.treasureValue}
         </div>
         <div className="text-sm text-white/80 font-medium">
-          宝藏价值
+          Treasure Value
         </div>
       </div>
 

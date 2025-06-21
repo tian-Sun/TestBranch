@@ -5,37 +5,37 @@ export const treasureLevels: TreasureLevel[] = [
     name: 'Bronze',
     minValue: 0,
     maxValue: 5,
-    color: 'text-amber-700',
-    bgGradient: 'from-amber-300 to-amber-500',
-    shadow: 'shadow-amber-200',
-    glow: 'shadow-amber-400/50'
+    color: 'text-orange-900',
+    bgGradient: 'from-amber-400 via-orange-500 to-amber-600',
+    shadow: 'shadow-orange-300/50',
+    glow: 'hover:shadow-orange-400/60'
   },
   {
     name: 'Silver',
     minValue: 5,
     maxValue: 15,
-    color: 'text-gray-700',
-    bgGradient: 'from-gray-300 to-gray-500',
-    shadow: 'shadow-gray-200',
-    glow: 'shadow-gray-400/50'
+    color: 'text-slate-800',
+    bgGradient: 'from-slate-300 via-slate-400 to-slate-500',
+    shadow: 'shadow-slate-300/50',
+    glow: 'hover:shadow-slate-400/60'
   },
   {
     name: 'Gold',
     minValue: 15,
     maxValue: 30,
-    color: 'text-yellow-800',
-    bgGradient: 'from-yellow-300 to-yellow-500',
-    shadow: 'shadow-yellow-200',
-    glow: 'shadow-yellow-400/50'
+    color: 'text-yellow-900',
+    bgGradient: 'from-yellow-300 via-amber-400 to-yellow-500',
+    shadow: 'shadow-yellow-300/50',
+    glow: 'hover:shadow-yellow-400/60'
   },
   {
     name: 'Diamond',
     minValue: 30,
     maxValue: Infinity,
-    color: 'text-blue-800',
-    bgGradient: 'from-blue-300 to-purple-500',
-    shadow: 'shadow-blue-200',
-    glow: 'shadow-blue-400/50'
+    color: 'text-sky-900',
+    bgGradient: 'from-cyan-300 via-sky-400 to-blue-500',
+    shadow: 'shadow-cyan-300/50',
+    glow: 'hover:shadow-cyan-400/60'
   }
 ];
 

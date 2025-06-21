@@ -18,15 +18,15 @@ export const Stats: React.FC<StatsProps> = ({
   const stats = [
     {
       icon: Target,
-      label: '完成任务',
+      label: 'Tasks Completed',
       value: totalTasks,
-      suffix: '个',
+      suffix: '',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50'
     },
     {
       icon: Clock,
-      label: '专注时间',
+      label: 'Focus Time',
       value: formatDuration(totalTime),
       suffix: '',
       color: 'text-green-600',
@@ -34,15 +34,15 @@ export const Stats: React.FC<StatsProps> = ({
     },
     {
       icon: Star,
-      label: '平均评分',
+      label: 'Avg Rating',
       value: averageScore.toFixed(1),
-      suffix: '分',
+      suffix: '',
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-50'
     },
     {
       icon: Trophy,
-      label: '宝藏总值',
+      label: 'Treasure Value',
       value: totalTreasureValue.toFixed(1),
       suffix: '',
       color: 'text-purple-600',

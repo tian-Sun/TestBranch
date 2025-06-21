@@ -4,9 +4,10 @@ import { useTimer } from '../hooks/useTimer';
 
 interface TimerProps {
   onComplete: (duration: number) => void;
+  activeTaskDescription?: string | null;
 }
 
-export const Timer: React.FC<TimerProps> = ({ onComplete }) => {
+export const Timer: React.FC<TimerProps> = ({ onComplete, activeTaskDescription }) => {
   const { seconds, isRunning, start, stop, reset, formatTime } = useTimer();
 
   const handleStart = () => {
@@ -30,7 +31,14 @@ export const Timer: React.FC<TimerProps> = ({ onComplete }) => {
           {formatTime()}
         </div>
         <p className="text-gray-600">
-          {isRunning ? '正在专注中...' : '准备开始新任务'}
+          {isRunning 
+            ? activeTaskDescription 
+              ? `Continuing: "${activeTaskDescription}"`
+              : 'Focusing...' 
+            : activeTaskDescription 
+              ? `Ready to continue: "${activeTaskDescription}"`
+              : 'Ready to start a new task'
+          }
         </p>
       </div>
 
@@ -41,7 +49,7 @@ export const Timer: React.FC<TimerProps> = ({ onComplete }) => {
             className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-green-300/30"
           >
             <Play className="w-5 h-5" fill="currentColor" />
-            开始任务
+            {activeTaskDescription ? 'Continue Task' : 'Start Task'}
           </button>
         ) : (
           <button
@@ -49,7 +57,7 @@ export const Timer: React.FC<TimerProps> = ({ onComplete }) => {
             className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-red-300/30"
           >
             <Square className="w-5 h-5" fill="currentColor" />
-            完成任务
+            Complete Task
           </button>
         )}
       </div>
@@ -59,7 +67,7 @@ export const Timer: React.FC<TimerProps> = ({ onComplete }) => {
           onClick={reset}
           className="mt-4 text-gray-500 hover:text-gray-700 font-medium transition-colors"
         >
-          重置计时器
+          Reset Timer
         </button>
       )}
     </div>

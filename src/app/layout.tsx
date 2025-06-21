@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Life is a Game - Gamified Time Tracker',
-  description: '将生活游戏化，每个任务都是通往宝藏山的一步',
+  description: 'Gamify your life, every task is a step towards the treasure mountain',
 }
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body className={inter.className}>{children}</body>
     </html>
   )
