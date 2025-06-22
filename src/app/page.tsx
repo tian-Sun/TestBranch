@@ -2,39 +2,39 @@
 
 import React, { useState } from 'react';
 import { Timer } from '../components/Timer';
-import { TaskModal } from '../components/TaskModal';
 import { TreasureGrid } from '../components/TreasureGrid';
 import { TaskDetailModal } from '../components/TaskDetailModal';
 import { Stats } from '../components/Stats';
 import { SettingsModal } from '../components/SettingsModal';
 import { useTasks } from '../hooks/useTasks';
 import { Task } from '../types';
-import { Mountain, Settings, AlertCircle } from 'lucide-react';
+import { Mountain, Settings, AlertCircle, LifeBuoy } from 'lucide-react';
+import { CategoryModal } from '../components/task-category/CategoryModal';
+import { useCategories, Category } from '../hooks/useCategories';
 
 export default function HomePage() {
-  const { tasks, addTask, deleteTask, logTimeToTask, getStats, isLoading, error } = useTasks();
-  const [showTaskModal, setShowTaskModal] = useState(false);
+  const { tasks, addTask, deleteTask, logTimeToTask, getStats, isLoading, error, updateTaskDescription } = useTasks();
+  const { categories } = useCategories();
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [completedDuration, setCompletedDuration] = useState(0);
   const [activeTaskForTimer, setActiveTaskForTimer] = useState<Task | null>(null);
 
   const stats = getStats();
 
-  const handleTimerComplete = (duration: number) => {
+  const handleTimerComplete = (duration: number, categoryId?: string) => {
     if (activeTaskForTimer) {
       logTimeToTask(activeTaskForTimer.id, duration);
       setActiveTaskForTimer(null);
-    } else {
-      setCompletedDuration(duration);
-      setShowTaskModal(true);
+    } else if (categoryId) {
+      const category = categories.find(c => c.id === categoryId);
+      if (category) {
+        const newTask = addTask(category, duration, 1);
+        setSelectedTask(newTask);
+        setShowDetailModal(true);
+      }
     }
-  };
-
-  const handleTaskSubmit = (description: string, score: number) => {
-    addTask(description, completedDuration, score);
-    setCompletedDuration(0);
   };
 
   const handleTaskClick = (task: Task) => {
@@ -46,13 +46,20 @@ export default function HomePage() {
     setActiveTaskForTimer(task);
     setShowDetailModal(false);
   };
-
+  
   const handleTaskDelete = (taskId: string) => {
     deleteTask(taskId);
+    setShowDetailModal(false);
   };
+  
+  const handleDescriptionUpdate = (taskId: string, description: string) => {
+    updateTaskDescription(taskId, description);
+    if (selectedTask && selectedTask.id === taskId) {
+        setSelectedTask({...selectedTask, description});
+    }
+  }
 
   const handleDataChange = () => {
-    // Force re-render when data changes
     window.location.reload();
   };
 
@@ -82,14 +89,23 @@ export default function HomePage() {
             Gamify your life, every task is a step towards the treasure mountain
           </p>
           
-          {/* Settings Button */}
-          <button
-            onClick={() => setShowSettingsModal(true)}
-            className="absolute top-0 right-0 p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            title="Settings"
-          >
-            <Settings className="w-6 h-6" />
-          </button>
+          <div className="absolute top-0 right-0 flex items-center gap-2">
+            <button
+              onClick={() => setShowCategoryModal(true)}
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              title="Manage Categories"
+            >
+              <LifeBuoy className="w-6 h-6" />
+            </button>
+
+            <button
+              onClick={() => setShowSettingsModal(true)}
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              title="Settings"
+            >
+              <Settings className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Error Display */}
@@ -105,7 +121,8 @@ export default function HomePage() {
           <Timer
             key={activeTaskForTimer?.id || 'new-task'}
             onComplete={handleTimerComplete}
-            activeTaskDescription={activeTaskForTimer?.description ?? null}
+            taskToContinue={activeTaskForTimer}
+            categories={categories}
           />
         </div>
 
@@ -131,30 +148,33 @@ export default function HomePage() {
             )}
           </div>
           
-          <TreasureGrid tasks={tasks} onTaskClick={handleTaskClick} />
+          <TreasureGrid 
+            tasks={tasks}
+            categories={categories}
+            onTaskClick={handleTaskClick} 
+          />
         </div>
       </div>
 
       {/* Modals */}
-      <TaskModal
-        isOpen={showTaskModal}
-        onClose={() => setShowTaskModal(false)}
-        onSubmit={handleTaskSubmit}
-        duration={completedDuration}
-      />
-
       <TaskDetailModal
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}
         task={selectedTask}
         onDelete={handleTaskDelete}
         onContinue={handleContinueTask}
+        onDescriptionUpdate={handleDescriptionUpdate}
       />
 
       <SettingsModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
         onDataChange={handleDataChange}
+      />
+
+      <CategoryModal
+        isOpen={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Task } from '../types';
 import { getTreasureLevel, formatDuration } from '../utils/treasureUtils';
 import { X, Clock, Star, Calendar, Trash2 } from 'lucide-react';
@@ -9,6 +9,7 @@ interface TaskDetailModalProps {
   task: Task | null;
   onDelete?: (taskId: string) => void;
   onContinue: (task: Task) => void;
+  onDescriptionUpdate: (taskId: string, description: string) => void;
 }
 
 export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
@@ -16,8 +17,17 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onClose,
   task,
   onDelete,
-  onContinue
+  onContinue,
+  onDescriptionUpdate
 }) => {
+  const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    if (task) {
+      setDescription(task.description || '');
+    }
+  }, [task]);
+
   if (!isOpen || !task) return null;
 
   const treasureLevel = getTreasureLevel(task.treasureValue);
@@ -26,6 +36,16 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     if (onDelete && window.confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
       onDelete(task.id);
       onClose();
+    }
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value);
+  };
+
+  const handleDescriptionBlur = () => {
+    if (task && description !== task.description) {
+      onDescriptionUpdate(task.id, description);
     }
   };
 
@@ -82,10 +102,21 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         {/* Task details */}
         <div className="space-y-4">
           <div>
+            <h3 className="text-sm font-medium text-gray-500 mb-1">Task Category</h3>
+            <div className="text-gray-800 bg-gray-50 rounded-lg p-3 font-medium">
+              {task.categoryName}
+            </div>
+          </div>
+          <div>
             <h3 className="text-sm font-medium text-gray-500 mb-1">Task Description</h3>
-            <p className="text-gray-800 bg-gray-50 rounded-lg p-3">
-              {task.description}
-            </p>
+            <textarea
+              value={description}
+              onChange={handleDescriptionChange}
+              onBlur={handleDescriptionBlur}
+              className="w-full text-gray-800 bg-gray-50 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="Add a description for your completed task..."
+              rows={3}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

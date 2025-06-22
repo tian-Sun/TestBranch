@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Task, TimeEntry } from '../types';
+import { Task, TimeEntry, Category } from '../types';
 
 const STORAGE_KEY = 'life-game-tasks';
-const STORAGE_VERSION = '1.0';
+const STORAGE_VERSION = '1.1';
 
 interface StorageData {
   version: string;
@@ -80,13 +80,15 @@ export const useTasks = () => {
     }
   }, [tasks, isLoading]);
 
-  const addTask = useCallback((description: string, duration: number, score: number) => {
+  const addTask = useCallback((category: Category, duration: number, score: number) => {
     const treasureValue = Math.round((duration / 60 * score) / 10 * 10) / 10;
     const now = new Date();
     
     const newTask: Task = {
       id: crypto.randomUUID(),
-      description: description.trim(),
+      categoryId: category.id,
+      categoryName: category.name,
+      description: '',
       duration,
       score,
       completedAt: now,
@@ -100,6 +102,14 @@ export const useTasks = () => {
 
     setTasks(prev => [newTask, ...prev]);
     return newTask;
+  }, []);
+
+  const updateTaskDescription = useCallback((taskId: string, description: string) => {
+    setTasks(prev => 
+      prev.map(task => 
+        task.id === taskId ? { ...task, description } : task
+      )
+    );
   }, []);
 
   const logTimeToTask = useCallback((taskId: string, sessionDuration: number) => {
@@ -202,6 +212,7 @@ export const useTasks = () => {
   return {
     tasks,
     addTask,
+    updateTaskDescription,
     logTimeToTask,
     deleteTask,
     updateTask,

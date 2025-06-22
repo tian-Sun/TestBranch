@@ -1,13 +1,14 @@
 import React from 'react';
-import { Task } from '../types';
+import { Task, Category } from '../types';
 import { TreasureBox } from './TreasureBox';
 
 interface TreasureGridProps {
   tasks: Task[];
+  categories: Category[];
   onTaskClick: (task: Task) => void;
 }
 
-export const TreasureGrid: React.FC<TreasureGridProps> = ({ tasks, onTaskClick }) => {
+export const TreasureGrid: React.FC<TreasureGridProps> = ({ tasks, categories, onTaskClick }) => {
   if (tasks.length === 0) {
     return (
       <div className="text-center py-12">
@@ -20,13 +21,17 @@ export const TreasureGrid: React.FC<TreasureGridProps> = ({ tasks, onTaskClick }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {tasks.map((task) => (
-        <TreasureBox
-          key={task.id}
-          task={task}
-          onClick={() => onTaskClick(task)}
-        />
-      ))}
+      {tasks.map((task) => {
+        const category = categories.find(c => c.id === task.categoryId) || null;
+        return (
+            <TreasureBox
+              key={task.id}
+              task={task}
+              category={category}
+              onClick={() => onTaskClick(task)}
+            />
+        );
+    })}
     </div>
   );
 };

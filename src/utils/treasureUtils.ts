@@ -5,10 +5,10 @@ export const treasureLevels: TreasureLevel[] = [
     name: 'Bronze',
     minValue: 0,
     maxValue: 5,
-    color: 'text-orange-900',
-    bgGradient: 'from-amber-400 via-orange-500 to-amber-600',
-    shadow: 'shadow-orange-300/50',
-    glow: 'hover:shadow-orange-400/60'
+    color: 'text-amber-900',
+    bgGradient: 'from-yellow-400 via-amber-500 to-yellow-600',
+    shadow: 'shadow-amber-400/50',
+    glow: 'hover:shadow-amber-300/60'
   },
   {
     name: 'Silver',
