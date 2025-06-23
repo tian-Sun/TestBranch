@@ -44,7 +44,7 @@ export const Timer: React.FC<TimerProps> = ({ onComplete, taskToContinue, catego
     }
 
     if (taskToContinue) {
-        return <p className="text-gray-600 h-10 flex items-center justify-center">Ready to continue: "{taskToContinue.categoryName}"</p>
+        return <p className="text-gray-600 h-10 flex items-center justify-center">Ready to continue: &ldquo;{taskToContinue.categoryName}&rdquo;</p>
     }
 
     return (
