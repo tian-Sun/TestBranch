@@ -10,6 +10,8 @@ interface TaskDetailModalProps {
   onDelete?: (taskId: string) => void;
   onContinue: (task: Task) => void;
   onDescriptionUpdate: (taskId: string, description: string) => void;
+  onScoreUpdate?: (taskId: string, score: number) => void;
+  mode?: 'new' | 'view';
 }
 
 export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
@@ -18,19 +20,24 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   task,
   onDelete,
   onContinue,
-  onDescriptionUpdate
+  onDescriptionUpdate,
+  onScoreUpdate,
+  mode = 'view',
 }) => {
   const [description, setDescription] = useState('');
+  const [score, setScore] = useState(0);
 
   useEffect(() => {
     if (task) {
       setDescription(task.description || '');
+      setScore(task.score || 0);
     }
   }, [task]);
 
   if (!isOpen || !task) return null;
 
   const treasureLevel = getTreasureLevel(task.treasureValue);
+  const canContinue = description.trim() && score > 0;
 
   const handleDelete = () => {
     if (onDelete && window.confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
@@ -46,6 +53,13 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const handleDescriptionBlur = () => {
     if (task && description !== task.description) {
       onDescriptionUpdate(task.id, description);
+    }
+  };
+
+  const handleScoreChange = (newScore: number) => {
+    setScore(newScore);
+    if (onScoreUpdate) {
+      onScoreUpdate(task.id, newScore);
     }
   };
 
@@ -136,16 +150,21 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 <span className="text-xs font-medium">Rating</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-lg font-semibold text-gray-800">{task.score}</span>
+                <span className="text-lg font-semibold text-gray-800">{score}</span>
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
-                    <Star
+                    <button
                       key={i}
-                      className={`w-3 h-3 ${
-                        i < task.score ? 'text-yellow-400' : 'text-gray-300'
-                      }`}
-                      fill={i < task.score ? 'currentColor' : 'none'}
-                    />
+                      onClick={() => handleScoreChange(i + 1)}
+                      className="hover:scale-110 transition-transform"
+                    >
+                      <Star
+                        className={`w-3 h-3 ${
+                          i < score ? 'text-yellow-400' : 'text-gray-300'
+                        }`}
+                        fill={i < score ? 'currentColor' : 'none'}
+                      />
+                    </button>
                   ))}
                 </div>
               </div>
@@ -176,18 +195,31 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         </div>
 
         <div className="mt-6 flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all duration-200"
-          >
-            Close
-          </button>
-          <button
-            onClick={() => onContinue(task)}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
-          >
-            Continue Task
-          </button>
+          {mode === 'view' && (
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all duration-200"
+            >
+              Close
+            </button>
+          )}
+          {mode === 'view' && canContinue && (
+            <button
+              onClick={() => onContinue(task)}
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+            >
+              Continue Task
+            </button>
+          )}
+          {mode === 'new' && (
+            <button
+              onClick={() => onContinue(task)}
+              disabled={!canContinue}
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              完成任务
+            </button>
+          )}
         </div>
       </div>
     </div>

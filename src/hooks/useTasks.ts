@@ -112,6 +112,18 @@ export const useTasks = () => {
     );
   }, []);
 
+  const updateTaskScore = useCallback((taskId: string, score: number) => {
+    setTasks(prev => 
+      prev.map(task => {
+        if (task.id === taskId) {
+          const treasureValue = Math.round((task.duration / 60 * score) / 10 * 10) / 10;
+          return { ...task, score, treasureValue };
+        }
+        return task;
+      })
+    );
+  }, []);
+
   const logTimeToTask = useCallback((taskId: string, sessionDuration: number) => {
     setTasks(prev => 
       prev.map(task => {
@@ -213,6 +225,7 @@ export const useTasks = () => {
     tasks,
     addTask,
     updateTaskDescription,
+    updateTaskScore,
     logTimeToTask,
     deleteTask,
     updateTask,

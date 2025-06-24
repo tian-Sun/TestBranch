@@ -13,13 +13,14 @@ import { CategoryModal } from '../components/task-category/CategoryModal';
 import { useCategories, Category } from '../hooks/useCategories';
 
 export default function HomePage() {
-  const { tasks, addTask, deleteTask, logTimeToTask, getStats, isLoading, error, updateTaskDescription } = useTasks();
-  const { categories } = useCategories();
+  const { tasks, addTask, deleteTask, logTimeToTask, getStats, isLoading, error, updateTaskDescription, updateTaskScore } = useTasks();
+  const { categories, refetchCategories } = useCategories();
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [activeTaskForTimer, setActiveTaskForTimer] = useState<Task | null>(null);
+  const [newTaskModal, setNewTaskModal] = useState(false);
 
   const stats = getStats();
 
@@ -30,9 +31,10 @@ export default function HomePage() {
     } else if (categoryId) {
       const category = categories.find(c => c.id === categoryId);
       if (category) {
-        const newTask = addTask(category, duration, 1);
+        // Create task without score, let user set it in modal
+        const newTask = addTask(category, duration, 0); // Set score to 0 initially
         setSelectedTask(newTask);
-        setShowDetailModal(true);
+        setNewTaskModal(true);
       }
     }
   };
@@ -59,8 +61,21 @@ export default function HomePage() {
     }
   }
 
+  const handleScoreUpdate = (taskId: string, score: number) => {
+    updateTaskScore(taskId, score);
+    if (selectedTask && selectedTask.id === taskId) {
+        const treasureValue = Math.round((selectedTask.duration / 60 * score) / 10 * 10) / 10;
+        setSelectedTask({...selectedTask, score, treasureValue});
+    }
+  }
+
   const handleDataChange = () => {
     window.location.reload();
+  };
+
+  const handleNewTaskFinish = () => {
+    setNewTaskModal(false);
+    setSelectedTask(null);
   };
 
   if (isLoading) {
@@ -123,6 +138,7 @@ export default function HomePage() {
             onComplete={handleTimerComplete}
             taskToContinue={activeTaskForTimer}
             categories={categories}
+            refetchCategories={refetchCategories}
           />
         </div>
 
@@ -164,6 +180,20 @@ export default function HomePage() {
         onDelete={handleTaskDelete}
         onContinue={handleContinueTask}
         onDescriptionUpdate={handleDescriptionUpdate}
+        onScoreUpdate={handleScoreUpdate}
+        mode="view"
+      />
+
+      {/* 新建任务弹窗 */}
+      <TaskDetailModal
+        isOpen={newTaskModal}
+        onClose={handleNewTaskFinish}
+        task={selectedTask}
+        onDelete={undefined}
+        onContinue={handleNewTaskFinish}
+        onDescriptionUpdate={handleDescriptionUpdate}
+        onScoreUpdate={handleScoreUpdate}
+        mode="new"
       />
 
       <SettingsModal

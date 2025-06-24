@@ -8,9 +8,10 @@ interface TimerProps {
   onComplete: (duration: number, categoryId?: string) => void;
   taskToContinue: Task | null;
   categories: Category[];
+  refetchCategories?: () => void;
 }
 
-export const Timer: React.FC<TimerProps> = ({ onComplete, taskToContinue, categories }) => {
+export const Timer: React.FC<TimerProps> = ({ onComplete, taskToContinue, categories, refetchCategories }) => {
   const { seconds, isRunning, start, stop, reset, formatTime } = useTimer();
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
 
@@ -22,6 +23,9 @@ export const Timer: React.FC<TimerProps> = ({ onComplete, taskToContinue, catego
     // but we can reset internal state if the continued task changes.
     if (taskToContinue) {
       setSelectedCategoryId('');
+      if (!isRunning) {
+        start();
+      }
     }
   }, [taskToContinue]);
 
@@ -51,6 +55,7 @@ export const Timer: React.FC<TimerProps> = ({ onComplete, taskToContinue, catego
         <select
             value={selectedCategoryId}
             onChange={(e) => setSelectedCategoryId(e.target.value)}
+            onFocus={refetchCategories}
             className="block w-full text-center p-2 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 h-10 bg-gray-50"
         >
             <option value="" disabled>-- Select a category --</option>

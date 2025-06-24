@@ -21,19 +21,22 @@ const STORAGE_KEY = 'task-categories';
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
 
-  useEffect(() => {
+  function refetchCategories() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      // Basic validation and merging with defaults
       const storedCategories = JSON.parse(stored);
       const updatedCategories = DEFAULT_CATEGORIES.map(defCat => {
-          const found = storedCategories.find((sc: Category) => sc.id === defCat.id);
-          return found ? { ...defCat, ...found } : defCat;
+        const found = storedCategories.find((sc: Category) => sc.id === defCat.id);
+        return found ? { ...defCat, ...found } : defCat;
       });
       setCategories(updatedCategories);
     } else {
       setCategories(DEFAULT_CATEGORIES);
     }
+  }
+
+  useEffect(() => {
+    refetchCategories();
   }, []);
 
   useEffect(() => {
@@ -60,5 +63,6 @@ export function useCategories() {
     updateCategory,
     resetCategories,
     updateCategoryColor,
+    refetchCategories,
   };
 } 

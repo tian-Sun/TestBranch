@@ -13,6 +13,31 @@ export const useTimer = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [lastStartTime, setLastStartTime] = useState<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number | null>(null);
+
+  // Function to update timer based on current time
+  const updateTimer = useCallback(() => {
+    if (isRunning && startTimeRef.current) {
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - startTimeRef.current) / 1000);
+      setSeconds(elapsedSeconds);
+    }
+  }, [isRunning]);
+
+  // Handle page visibility changes
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && isRunning) {
+        // Page became visible, update timer immediately
+        updateTimer();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isRunning, updateTimer]);
 
   // Load timer state from localStorage on mount
   useEffect(() => {
@@ -27,10 +52,12 @@ export const useTimer = () => {
           setSeconds(timerState.seconds + elapsedSeconds);
           setIsRunning(true);
           setLastStartTime(timerState.lastStartTime);
+          startTimeRef.current = timerState.lastStartTime;
         } else {
           setSeconds(timerState.seconds);
           setIsRunning(false);
           setLastStartTime(null);
+          startTimeRef.current = null;
         }
       }
     } catch (error) {
@@ -53,49 +80,61 @@ export const useTimer = () => {
     }
   }, [seconds, isRunning, lastStartTime]);
 
-  // Timer logic
+  // Timer logic using timestamp-based approach
   useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        setSeconds(prev => prev + 1);
-      }, 1000);
+    if (isRunning && startTimeRef.current) {
+      // Update immediately
+      updateTimer();
+      
+      // Then set up interval for UI updates
+      intervalRef.current = setInterval(updateTimer, 1000);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     }
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [isRunning]);
+  }, [isRunning, updateTimer]);
 
   const start = useCallback(() => {
+    const now = Date.now();
     setIsRunning(true);
-    setLastStartTime(Date.now());
+    setLastStartTime(now);
+    startTimeRef.current = now;
+    setSeconds(0);
   }, []);
 
   const stop = useCallback(() => {
     setIsRunning(false);
     setLastStartTime(null);
+    startTimeRef.current = null;
   }, []);
 
   const reset = useCallback(() => {
     setSeconds(0);
     setIsRunning(false);
     setLastStartTime(null);
+    startTimeRef.current = null;
   }, []);
 
   const pause = useCallback(() => {
     setIsRunning(false);
     setLastStartTime(null);
+    startTimeRef.current = null;
   }, []);
 
   const resume = useCallback(() => {
+    const now = Date.now();
     setIsRunning(true);
-    setLastStartTime(Date.now());
+    setLastStartTime(now);
+    startTimeRef.current = now;
   }, []);
 
   const setTime = useCallback((newSeconds: number) => {
@@ -114,6 +153,7 @@ export const useTimer = () => {
     setSeconds(0);
     setIsRunning(false);
     setLastStartTime(null);
+    startTimeRef.current = null;
   }, []);
 
   return {
