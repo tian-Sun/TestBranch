@@ -196,20 +196,20 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
         <div className="mt-6 flex gap-3">
           {mode === 'view' && (
-            <button
-              onClick={onClose}
-              className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all duration-200"
-            >
-              Close
-            </button>
-          )}
-          {mode === 'view' && canContinue && (
-            <button
-              onClick={() => onContinue(task)}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
-            >
-              Continue Task
-            </button>
+            <>
+              <button
+                onClick={onClose}
+                className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all duration-200"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => onContinue(task)}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+              >
+                Continue Task
+              </button>
+            </>
           )}
           {mode === 'new' && (
             <button
